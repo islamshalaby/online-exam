@@ -13,6 +13,7 @@
 	  <div class="form-group">
 		<label for="sel1">Exam Code</label>
 		<select  name="exam_code" class="form-control" id="sel1">
+			<option disabled selected>Select</option>
 			@if (count($codes) > 0)
 			@foreach ($codes as $code)
 			<option value="{{ $code->uniqueid }}">{{ $code->Course }}</option>

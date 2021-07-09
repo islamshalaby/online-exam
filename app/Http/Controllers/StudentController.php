@@ -28,7 +28,6 @@ class StudentController extends Controller
         $codesLive = Examinfo::where('type', 1)->orderBy('id', 'desc')->get();
         if (count($codesLive) > 0) {
             for ($l = 0; $l < count($codesLive); $l ++) {
-
                 if (count($codesLive[$l]->children) > 0) {
                     for ($c = 0; $c < count($codesLive[$l]->children); $c ++) {
                         $std = Student::where('student_id', auth()->user()->id)->where('uniqueid', $codesLive[$l]->children[$c]->uniqueid)->first();
@@ -44,7 +43,10 @@ class StudentController extends Controller
                         }
                     }
                 }else {
-                    array_push($codes, $codesLive[$l]);
+                    $std = Student::where('student_id', auth()->user()->id)->where('uniqueid', $codesLive[$l]->uniqueid)->first();
+                    if (!$std) {
+                        array_push($codes, $codesLive[$l]);
+                    }
                 }
             }
         }
@@ -70,6 +72,10 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate(\request(),
+            [
+                'exam_code' => 'required'
+            ]);
         //
         $student= new Student;
 
@@ -100,7 +106,7 @@ class StudentController extends Controller
             $findtime= Examinfo::where('uniqueid',$id)->value('time');
             $course= Examinfo::where('uniqueid',$id)->value('Course');
             $questions=Question::where('quiz_id',$findcourse)->get();
-            return view('answer.show')->with('questions', $questions)->with('student_id',$student_id)->with('course',$course)->with('time',$findtime);
+            return view('answer.show')->with('questions', $questions)->with('student_id',$student_id)->with('course',$course)->with('time',$findtime)->with('stud_id',$student->student_id)->with('course_id', $id);
         }
         
 

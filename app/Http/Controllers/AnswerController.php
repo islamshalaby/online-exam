@@ -52,42 +52,59 @@ class AnswerController extends Controller
             ]);
             // dd($answer);
             $exam = examinfo::where('uniqueid', $request->uniqueid)->first();
+            // dd($request->uniqueid);
             if ($request->input('answer')==$request->input('true_answer')) {
                 $insert=Student::where('id',$request->input('student_id'))->where('uniqueid', $request->uniqueid)->increment('score');
             }
             $student = Student::where('student_id', auth()->user()->id)->where('uniqueid', $request->uniqueid)->first();
-            if ($exam->type == 2) {
+            // if ($exam->type == 2) {
                 $parentExam = examinfo::where('id', $exam->exam_id)->first();
                 if ($student->score >= $exam->score) {
                     $student->status = 1;
                 }
                 $student->test_score = $student->score;
                 $student->save();
-            }else {
-                if ($student->score >= $exam->score) {
-                    $student->status = 1;
-                }
-                $student->score = $student->score;
-                $student->save();
-            }
-            // $user = User::where('id', auth()->user()->id)->first();
-            // if ($exam->type == 2) {
-            //     $score = ($student->test_score / count($exam->questions)) * 100;
             // }else {
-            //     $score = ($student->score / count($exam->questions)) * 100;
+            //     if ($student->score >= $exam->score) {
+            //         $student->status = 1;
+            //     }
+            //     $student->score = $student->score;
+            //     $student->save();
             // }
             
-            // $rounded_score = number_format($score, 2, '.', '');
-            // $data = ["name" => auth()->user()->name, "score" => $rounded_score, "course" => $exam];
-            // Mail::send('mail', $data, function($message) use($user, $exam) {
-            //     $message->to($user->email, $user->name)->subject
-            //     ($exam->Course . ' Exam Result');
-            //     $message->from('masteronlineexam@gmail.com','Master Online Exam');
-            // });
             return response($answer);
         }else{
             return "ajax not done";
         }
+    }
+
+
+    public function submit($tudent_id, $course_id) {
+        
+        $student = Student::where('student_id',$tudent_id)->where('uniqueid', $course_id)->first();
+        $course = Examinfo::where('uniqueid', $course_id)->first();
+        
+        
+        if ($student->score == 0) {
+            $answers = $student->answers()->where('given_answer', '!=', '0')->get();
+            $score = 0;
+            $rounded_score = number_format($score, 2, '.', '');
+        }else {
+            $score = ($student->score / count($student->answers)) * 100;
+            $answers = $student->answers()->where('given_answer', '!=', '0')->get();
+            $score = ($student->score / count($course->questions)) * 100;
+            $rounded_score = number_format($score, 2, '.', '');
+        }
+        $user = User::where('id', $tudent_id)->first();
+        
+        $data = ["name" => $user->name, "score" => $rounded_score, "course" => $course];
+        Mail::send('mail', $data, function($message) use($user, $course) {
+            $message->to($user->email, $user->name)->subject
+               ($course->Course . ' Exam Result');
+            $message->from('masteronlineexam@gmail.com','Master Online Exam');
+         });
+
+         return view('welcome', compact('user'));
     }
 
     /**

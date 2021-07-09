@@ -39,9 +39,8 @@ countdown('<?php echo $time; ?>');
     var realtime = time*60000;
     setTimeout(function () {
         alert('Time Out');
-        window.location.href= '/';},
+        window.location.href= '/submit/' + "{{ $stud_id }}" + "/" + "{{ $course_id }}"},
    realtime);
-
     
 </script>
 
@@ -58,20 +57,20 @@ countdown('<?php echo $time; ?>');
             <h1><b>Time <span id="timer" style="color: #c1bfbf">0.00</span></b></h1><br>
           </div>
         </nav>
-        <h1 class="col-lg-offset-5"  style="color: #c1bfbf;"><span style="background-color:#e8e8e8;color: #c1bfbf;border-radius: 10px"class="hero-content text-center"><b>  {{$course}} Exam </b></span></h1>
+        <h1 class="col-lg-offset-5" ><span style="color: #c1bfbf;"class="hero-content text-center"><b>  {{$course}} Exam </b></span></h1>
         <div class="col-md-6 col-lg-6 col-sm-6 col-lg-offset-3" style="background-color: #e8e8e8">
             
         @foreach($questions as $question)
-            <div style="background-color: rgb(220 218 218);padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;" class="col-md-6 col-lg-8 col-sm-6 col-lg-offset-2">
+            <div style="border: 1px solid;
+            padding: 10px;
+            border-radius: 5px;margin-bottom : 20px" class="col-md-6 col-lg-8 col-sm-6 col-lg-offset-2">
                 <form method="post" action="{{route('answer.store')}}" class="ansform">
                 	{{ csrf_field() }}
 
-                    <h3>{{$question->question}} ?</h3>
+                    <h3 style="margin-top: 0;">{{$question->question}} ?</h3>
                     <div class="col-lg-offset-1">
-                        <input type="hidden" name="uniqueid" value="{{$question->exam->uniqueid}}">
                         <input type="hidden" name="question" value="{{$question->question}}">
+                        <input type="hidden" name="uniqueid" value="{{$question->exam->uniqueid}}">
                         <input type="hidden" name="student_id" value="{{$student_id}}">
                         <input type="hidden" name="true_answer" value="{{$question->answer}}">
                         <input name="answer" value="{{$question->choice1}}" type="radio"> {{$question->choice1}} <br>
@@ -83,7 +82,9 @@ countdown('<?php echo $time; ?>');
                  </form>
             </div>
          @endforeach
-
+         <div class="col-md-6 col-lg-8 col-sm-6 col-lg-offset-2">
+            <a href="{{ route('submit', [$stud_id, $course_id]) }}" class="btn btn-primary">Finish</a>
+         </div>
         </div>
     </div>
    

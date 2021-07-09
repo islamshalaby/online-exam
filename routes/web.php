@@ -34,7 +34,7 @@ Route::resource('result' , 'ResultController')->middleware('auth');
 Route::resource('profile' , 'ProfileController')->middleware('auth');
 
 Route::get('/exam/students/{exam_id}', 'ExaminfoController@show_students')->name('exam.students');
-
+Route::get('/submit/{student_id}/{course_id}', 'AnswerController@submit')->name('submit');
 
 #admin routes
 Route::resource('/admin', 'AdminController')->middleware('auth');
